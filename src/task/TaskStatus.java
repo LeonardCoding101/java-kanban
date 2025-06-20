@@ -1,2 +1,7 @@
-package PACKAGE_NAME;public class TaskStatus {
+package task;
+
+public enum TaskStatus {
+    NEW,
+    IN_PROGRESS,
+    DONE
 }
