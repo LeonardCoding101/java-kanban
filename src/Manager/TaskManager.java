@@ -16,8 +16,8 @@ public class TaskManager {
             System.out.println("Список задач пуст");
         }
         ArrayList<Task> taskList = new ArrayList<>();
-        for (Task task : tasks.values()) {  //Тут IDEA предлагает сделать формат return new ArrayList<>(tasks.values());
-            taskList.add(task); // но мы такое еще не проходили, пробежался циклом
+        for (Task task : tasks.values()) {
+            taskList.add(task);
         }
         return taskList;
     }
@@ -57,8 +57,9 @@ public class TaskManager {
         int epicOfSubtask = subTask.getEpicId();
         Epic epic = epicTasks.get(epicOfSubtask);
         if (epic != null) {
-            epic.addSubtask(subTask); // Остается вопрос, нужно ли сюда добавлять обновление статуса эпика
-        }                             // в изначальной версии не добавил
+            epic.addSubtask(subTask);
+            changeEpicStatus(epicTasks.get(subTask.getEpicId()));
+        }
 
     }
 
@@ -66,6 +67,7 @@ public class TaskManager {
         epic.setId(idCounter);
         epicTasks.put(idCounter, epic);
         idCounter++;
+        changeEpicStatus(epic);
     }
 
     void updateTask(Task task) {
@@ -94,7 +96,7 @@ public class TaskManager {
         }
     }
 
-    void updateSub (Subtask subtask) {
+    void updateSub(Subtask subtask) {
         int idToUpdateSub = 0;
         for (Subtask subCheck : subTasks.values()) {
             if (Objects.equals(subCheck.getName(), subtask.getName())) {
@@ -103,6 +105,7 @@ public class TaskManager {
             if (idToUpdateSub > 0) {
                 subtask.setId(idToUpdateSub);
                 subTasks.put(idToUpdateSub, subtask);
+                changeEpicStatus(epicTasks.get(subtask.getEpicId()));
             }
         }
     }
@@ -124,7 +127,15 @@ public class TaskManager {
     }
 
     void removeSubTaskById(int id) {
+        int epicIdOfSub = subTasks.get(id).getEpicId();
         subTasks.remove(id);
+        Epic epic = epicTasks.get(epicIdOfSub);
+        ArrayList<Integer> subTasks = epic.getSubTasksId();
+        for (int i = 0; i <subTasks.size() ; i++) {
+            if ( subTasks.get(i) == id)
+                epic.removeSubTask(i);
+        }
+        changeEpicStatus(epic);
     }
 
     void removeEpicById(int id) {
@@ -154,7 +165,7 @@ public class TaskManager {
     private void changeEpicStatus(Epic epic) {
         int newCount = 0;
         int doneCount = 0;
-        int total = subTasks.size();
+        int total = getSubtasksFromEpicId(epic.getId()).size();
         ArrayList<Integer> subTaskProgress = epic.getSubTasksId();
         for (Integer subIds : subTaskProgress) {
             Subtask subTask = subTasks.get(subIds);
@@ -169,13 +180,13 @@ public class TaskManager {
                     break;
             }
         }
-    if (newCount == total) {
-        epic.setStatus(TaskStatus.NEW);
-    } else if (doneCount == total) {
-        epic.setStatus(TaskStatus.DONE);
-    } else {
-        epic.setStatus(TaskStatus.IN_PROGRESS);
-    }
+        if (newCount == total) {
+            epic.setStatus(TaskStatus.NEW);
+        } else if (doneCount == total) {
+            epic.setStatus(TaskStatus.DONE);
+        } else {
+            epic.setStatus(TaskStatus.IN_PROGRESS);
+        }
     }
 
     void deleteTasks() {
