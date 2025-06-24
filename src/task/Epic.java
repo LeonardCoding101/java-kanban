@@ -4,15 +4,19 @@ import java.util.ArrayList;
 import java.util.Objects;
 
 public class Epic extends Task {
+
+
     private final ArrayList<Integer> subTasksId = new ArrayList<>();
 
     public Epic(String name, String description, TaskStatus status) {
         super(name, description, status);
 
     }
+
     public void addSubtask(Subtask subTask) {
         subTasksId.add(subTask.getId());
     }
+
     public ArrayList<Integer> getSubTasksId() {
         return subTasksId;
     }
@@ -34,4 +38,6 @@ public class Epic extends Task {
     public int hashCode() {
         return Objects.hash(super.hashCode(), subTasksId);
     }
+
+
 }
