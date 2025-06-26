@@ -1,25 +1,32 @@
 package task;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Objects;
 
 public class Epic extends Task {
 
 
-    private final ArrayList<Integer> subTasksId = new ArrayList<>();
-
+    private ArrayList<Integer> subTasksId = new ArrayList<>(); // тут изменил значение с final, чтобы при апдейте эпика
+    // вызывался метод setSubTasksId и обновлялся статус эпика соответственно
     public Epic(String name, String description, TaskStatus status) {
         super(name, description, status);
 
     }
 
-    public void addSubtask(Subtask subTask) {
+    public void addSubtaskId(Subtask subTask) {
         subTasksId.add(subTask.getId());
     }
 
     public ArrayList<Integer> getSubTasksId() {
         return subTasksId;
     }
+
+    public ArrayList<Integer> setSubTasksId(ArrayList<Integer> subTasksId) {
+        this.subTasksId = subTasksId;
+        return subTasksId;
+    }
+
 
     public void removeSubTask(int subTaskId) {
         subTasksId.remove(subTaskId);
@@ -39,5 +46,14 @@ public class Epic extends Task {
         return Objects.hash(super.hashCode(), subTasksId);
     }
 
-
+    @Override
+    public String toString() {
+        return "Epic{" +
+                "subTasksId=" + subTasksId +
+                ", name='" + name + '\'' +
+                ", description='" + description + '\'' +
+                ", id=" + id +
+                ", status=" + status +
+                '}';
+    }
 }

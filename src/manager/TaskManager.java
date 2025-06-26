@@ -1,4 +1,4 @@
-package Manager;
+package manager;
 
 import task.*;
 
@@ -59,18 +59,18 @@ public class TaskManager {
         int epicOfSubtask = subTask.getEpicId();
         Epic epic = epicTasks.get(epicOfSubtask);
         if (epic != null) {
-            epic.addSubtask(subTask);
+            epic.addSubtaskId(subTask);
             changeEpicStatus(epicTasks.get(subTask.getEpicId()));
         }
 
     }
 
-    public void addEpicTask(Epic epic) {
+    public void addEpic(Epic epic) {
         epic.setId(idCounter);
         epicTasks.put(idCounter, epic);
         idCounter++;
-        changeEpicStatus(epic);
-    }
+        changeEpicStatus(epic); // Оставил проверку, в апдейтей сабтаска и так стояло, мне показалось это разумным :)))
+    } // даже проверку в мейне на этот счет сделал
 
     public void updateTask(Task task) {
         int idToUpdateTask = 0;
@@ -93,12 +93,15 @@ public class TaskManager {
             }
             if (idToUpdateEpic > 0) {
                 epic.setId(idToUpdateEpic);
-                epicTasks.put(idToUpdateEpic, epic);
+                    ArrayList<Integer> subtask = epicTasks.get(idToUpdateEpic).getSubTasksId();
+                    epic.setSubTasksId(subtask);
             }
+            epicTasks.put(idToUpdateEpic, epic);
         }
+
     }
 
-    public void updateSub(Subtask subtask) {
+    public void updateSubTask(Subtask subtask) {
         int idToUpdateSub = 0;
         for (Subtask subCheck : subTasks.values()) {
             if (Objects.equals(subCheck.getName(), subtask.getName())) {
@@ -133,8 +136,8 @@ public class TaskManager {
         subTasks.remove(id);
         Epic epic = epicTasks.get(epicIdOfSub);
         ArrayList<Integer> subTasks = epic.getSubTasksId();
-        for (int i = 0; i <subTasks.size() ; i++) {
-            if ( subTasks.get(i) == id)
+        for (int i = 0; i < subTasks.size(); i++) {
+            if (subTasks.get(i) == id)
                 epic.removeSubTask(i);
         }
         changeEpicStatus(epic);
@@ -196,7 +199,10 @@ public class TaskManager {
     }
 
     public void deleteSubTasks() {
-        subTasks.clear();  // Не совсем понимаю, какой статус ставить эпику в этом случае
+        subTasks.clear();
+        for (Epic epic: epicTasks.values()) {
+            epic.setStatus(TaskStatus.NEW);
+        }
     }
 
     public void deleteEpicTasks() {
